@@ -1,5 +1,17 @@
 # kira-kit
 
+## 0.8.0
+
+### Minor Changes
+
+- Registry release with `KiraDataTable` presets and composable filters, table and card results, and loading, empty, and error states.
+- Added live system theme tracking, cookie-backed theme control, and a pre-paint bootstrap helper to `ThemeProvider`.
+
+### Patch Changes
+
+- Fixed Input action overlap, InputGroup add-on spacing, and DataTable column resize behavior.
+- Routed Sidebar links through the configured adapter and fixed duplicate `SidebarUser` avatars.
+
 ## 0.7.1
 
 ### Patch Changes

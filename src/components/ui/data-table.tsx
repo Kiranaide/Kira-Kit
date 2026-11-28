@@ -1,10 +1,9 @@
 "use client";
 
-"use no memo";
-// Compiler opt-out: TanStack Virtual's useVirtualizer is on React Compiler's
-// incompatible-library list, and getters like getRowModel() read instance
-// state the compiler can't see. Re-renders are driven explicitly by the
-// useSelector subscriptions below; re-evaluate once a safe API ships.
+// Components and hooks in this module that read TanStack Table / TanStack
+// Virtual mutable getters opt out of React Compiler individually via
+// function-level "use no memo" directives (module-level directives are stripped
+// by Rolldown during bundling).
 
 import * as React from "react";
 import {
@@ -61,6 +60,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  IconAlertCircle,
   IconCheck,
   IconChevronDown,
   IconChevronRight,
@@ -75,6 +75,8 @@ import {
   IconPin,
   IconPinFilled,
   IconPinnedOff,
+  IconRefresh,
+  IconSearch,
   IconSelector,
   IconTrash,
   IconX,
@@ -91,6 +93,23 @@ import {
   type TableDensity,
 } from "@/components/ui/table";
 import { KiraPagination } from "@/components/ui/pagination";
+import { KiraEmpty } from "@/components/ui/empty";
+import { KiraSelect } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Kbd } from "@/components/ui/kbd";
+import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -113,6 +132,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   isFunctionProp,
   isNumberProp,
@@ -288,7 +308,15 @@ interface DataTableContextValue<TData extends RowData> {
   containerHeight: number;
   onLoadMore?: () => void;
   isLoading: boolean;
+  isFetching: boolean;
   hasNextPage: boolean;
+  error?: React.ReactNode;
+  onRetry?: () => void;
+  hasActiveFilters: boolean;
+  onResetFilters?: () => void;
+  searchQuery?: string;
+  onRowClick?: (row: DTRow<TData>) => void;
+  pendingRowIds?: ReadonlySet<string>;
 }
 
 const DataTableContext =
@@ -519,7 +547,13 @@ interface DataTableProps<TData extends RowData, TValue> {
     onPageSizeChange?: (pageSize: number) => void;
   };
   initialSorting?: SortingState;
+  sorting?: SortingState;
+  onSortingChange?: (sorting: SortingState) => void;
+  manualSorting?: boolean;
+  initialColumnPinning?: Partial<ColumnPinningState>;
   onRowSelectionChange?: (selection: RowSelectionState) => void;
+  onRowClick?: (row: DTRow<TData>) => void;
+  pendingRowIds?: ReadonlySet<string>;
   getSubRows?: (originalRow: TData) => TData[] | undefined;
   getRowCanExpand?: (row: DTRow<TData>) => boolean;
   /** Initial virtual row height guess; defaults to a density-based estimate. */
@@ -527,7 +561,14 @@ interface DataTableProps<TData extends RowData, TValue> {
   containerHeight?: number;
   onLoadMore?: () => void;
   isLoading?: boolean;
+  /** True while refetching with previous rows still on screen. */
+  isFetching?: boolean;
   hasNextPage?: boolean;
+  error?: React.ReactNode;
+  onRetry?: () => void;
+  hasActiveFilters?: boolean;
+  onResetFilters?: () => void;
+  searchQuery?: string;
   /** Persist density, sorting and column visibility/order/sizing/pinning. */
   persistStateKey?: string;
   persistStateVersion?: number;
@@ -556,6 +597,8 @@ function DataTableSearch({
   globalSearch = false,
   className,
 }: DataTableSearchProps) {
+  "use no memo";
+
   const { table } = useDataTable();
   const state = useTableState(table);
 
@@ -709,6 +752,15 @@ function handleGridCellEntry(
   return true;
 }
 
+type DataTableEmptyReason = "no-data" | "no-results" | "error";
+
+interface DataTableEmptyContext {
+  reason: DataTableEmptyReason;
+  query?: string;
+  onReset?: () => void;
+  onRetry?: () => void;
+}
+
 interface DataTableContentProps<TData extends RowData> {
   renderSubComponent?: (props: { row: DTRow<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -716,11 +768,20 @@ interface DataTableContentProps<TData extends RowData> {
   enableReordering?: boolean;
   onReorder?: (newOrder: string[]) => void;
   density?: DataTableDensity;
-  emptyState?: React.ReactNode;
+  emptyState?:
+    React.ReactNode | ((context: DataTableEmptyContext) => React.ReactNode);
   striped?: boolean;
   bordered?: boolean;
   /** Accessible name for the table's scroll region. */
   label?: string;
+  /** Switch between semantic <table> and accessible card list rendering. */
+  view?: "table" | "cards";
+  /** Custom card renderer when view="cards". Falls back to visible cells. */
+  renderCard?: (row: DTRow<TData>) => React.ReactNode;
+  /** Show a labeled "Sort by" selector above the list when view="cards". */
+  showCardSort?: boolean;
+  /** Explicit skeleton row/card count during initial load. Defaults to pageSize. */
+  skeletonRows?: number;
   className?: string;
   containerClassName?: string;
 }
@@ -734,7 +795,31 @@ interface DataTableFrameProps<TData extends RowData> {
   containerRef?: React.Ref<HTMLDivElement>;
   containerStyle?: React.CSSProperties;
   forceStickyHeader?: boolean;
+  isFetching?: boolean;
   children: React.ReactNode;
+}
+
+function buildColumnSizeStyle<TData extends RowData>(
+  table: DTTable<TData>,
+  resizable: boolean,
+): React.CSSProperties & Record<`--${string}`, number | undefined> {
+  const style: React.CSSProperties & Record<`--${string}`, number | undefined> =
+    {};
+
+  for (const header of table.getFlatHeaders()) {
+    style[`--header-${cssId(header.id)}-size`] = header.getSize();
+    style[`--col-${cssId(header.column.id)}-size`] = header.column.getSize();
+  }
+
+  if (resizable) {
+    Object.assign(style, {
+      width: table.getTotalSize(),
+      minWidth: "100%",
+      tableLayout: "fixed",
+    });
+  }
+
+  return style;
 }
 
 function DataTableFrame<TData extends RowData>({
@@ -746,33 +831,18 @@ function DataTableFrame<TData extends RowData>({
   containerRef,
   containerStyle,
   forceStickyHeader = false,
+  isFetching = false,
   children,
 }: DataTableFrameProps<TData>) {
+  "use no memo";
+
   const { table, density: ctxDensity } = useDataTable<TData>();
   const density = content.density ?? ctxDensity;
-  const sticky = forceStickyHeader || !!content.stickyHeader;
-  const resizable = !!table.options.enableColumnResizing;
+  const sticky = forceStickyHeader || Boolean(content.stickyHeader);
+  const resizable = Boolean(table.options.enableColumnResizing);
   const headerGroups = table.getHeaderGroups();
-
-  // Widths as CSS variables on <table>: during a resize drag only this style
-  // changes, and the (memoized) body picks the new widths up via var().
-  const style: React.CSSProperties & Record<`--${string}`, number | undefined> =
-    {};
-
-  for (const header of table.getFlatHeaders()) {
-    style[`--header-${cssId(header.id)}-size`] = header.getSize();
-    style[`--col-${cssId(header.column.id)}-size`] = header.column.getSize();
-  }
-
-  if (resizable) {
-    // Fixed layout + explicit width so the browser honors column widths; stable
-    // from first render so columns don't snap when a drag starts.
-    Object.assign(style, {
-      width: table.getTotalSize(),
-      minWidth: "100%",
-      tableLayout: "fixed",
-    });
-  }
+  const style = buildColumnSizeStyle(table, resizable);
+  const useDefaultMaxHeight = sticky && !containerStyle?.height;
 
   return (
     // kira-kit-ignore arbitrary-values: 600px scroll viewport bound for the table body
@@ -784,16 +854,15 @@ function DataTableFrame<TData extends RowData>({
       stickyHeader={sticky}
       label={content.label}
       isGrid={isGrid}
+      aria-busy={isFetching || undefined}
       ariaRowCount={rowCount + headerGroups.length}
       ariaColCount={table.getVisibleLeafColumns().length}
       onKeyDown={onKeyDown}
       containerRef={containerRef}
       containerStyle={containerStyle}
-      // The scroll container must be Table's own wrapper — a sticky header
-      // only sticks to its nearest scrolling ancestor.
       containerClassName={cn(
         "rounded-lg border border-border",
-        sticky && !containerStyle?.height && "max-h-[600px]",
+        useDefaultMaxHeight && "max-h-[600px]",
         content.containerClassName,
       )}
       className={cn(density === "compact" && "text-xs", content.className)}
@@ -807,6 +876,7 @@ function DataTableFrame<TData extends RowData>({
                 key={header.id}
                 header={header}
                 isGrid={isGrid}
+                isResizable={resizable}
               />
             ))}
           </TableRow>
@@ -820,10 +890,14 @@ function DataTableFrame<TData extends RowData>({
 function DataTableHeadCell<TData extends RowData>({
   header,
   isGrid,
+  isResizable = false,
 }: {
   header: DTHeader<TData>;
   isGrid: boolean;
+  isResizable?: boolean;
 }) {
+  "use no memo";
+
   const resolveAriaSort1 = () => {
     if (sorted === "asc") {
       return "ascending" as const;
@@ -848,7 +922,14 @@ function DataTableHeadCell<TData extends RowData>({
       className="group relative"
       style={{ width: `calc(var(--header-${cssId(header.id)}-size) * 1px)` }}
     >
-      {header.isPlaceholder ? null : <FlexRender header={header} />}
+      <div
+        className={cn(
+          "min-w-0",
+          isResizable && "overflow-hidden text-ellipsis",
+        )}
+      >
+        {header.isPlaceholder ? null : <FlexRender header={header} />}
+      </div>
       {column.getCanResize() && <DataTableResizeHandle header={header} />}
     </TableHead>
   );
@@ -868,6 +949,10 @@ interface DataTableRowProps<TData extends RowData> {
   rowStyle?: React.CSSProperties;
   isDragging?: boolean;
   dragHandleProps?: React.HTMLAttributes<HTMLElement>;
+  isResizable?: boolean;
+  stickyHeader?: boolean;
+  isPending?: boolean;
+  onRowClick?: (row: DTRow<TData>) => void;
 }
 
 function DataTableRow<TData extends RowData>({
@@ -884,7 +969,13 @@ function DataTableRow<TData extends RowData>({
   rowStyle,
   isDragging = false,
   dragHandleProps,
+  isResizable = false,
+  stickyHeader = false,
+  isPending = false,
+  onRowClick,
 }: DataTableRowProps<TData>) {
+  "use no memo";
+
   const cells = row.getVisibleCells();
   const clickToExpand = expandOnRowClick && row.getCanExpand();
   // Explicit parity: sub-rows and virtual spacers would break nth-child.
@@ -907,6 +998,10 @@ function DataTableRow<TData extends RowData>({
         activeCol,
         onCellFocus,
         dragHandleProps,
+        isResizable,
+        stickyHeader,
+        isPending,
+        onRowClick,
       })}
       {row.getIsExpanded() && renderSubComponent && (
         <TableRow stripe={stripe}>
@@ -919,24 +1014,153 @@ function DataTableRow<TData extends RowData>({
   );
 }
 
-function DataTableEmptyRow({
+function resolveDataTableEmptyReason<TData extends RowData>(
+  ctx: DataTableContextValue<TData>,
+): DataTableEmptyReason {
+  if (ctx.error) return "error";
+
+  const state = ctx.table.store.state;
+
+  const hasTableFilters =
+    ctx.hasActiveFilters ||
+    state.columnFilters.length > 0 ||
+    Boolean(String(state.globalFilter ?? "").trim());
+
+  return hasTableFilters ? "no-results" : "no-data";
+}
+
+function resolveDataTableEmptyNode<TData extends RowData>(
+  emptyState: DataTableContentProps<TData>["emptyState"],
+  ctx: DataTableContextValue<TData>,
+): React.ReactNode {
+  const reason = resolveDataTableEmptyReason(ctx);
+
+  const emptyContext: DataTableEmptyContext = {
+    reason,
+    query: ctx.searchQuery,
+    onReset: ctx.onResetFilters,
+    onRetry: ctx.onRetry,
+  };
+
+  if (isFunctionProp(emptyState)) {
+    return emptyState(emptyContext);
+  }
+
+  if (emptyState !== undefined && emptyState !== null) {
+    return emptyState;
+  }
+
+  if (reason === "error") {
+    return (
+      <KiraEmpty
+        size="sm"
+        state="error"
+        description={isStringProp(ctx.error) ? ctx.error : undefined}
+        primaryAction={
+          ctx.onRetry ? { label: "Retry", onClick: ctx.onRetry } : undefined
+        }
+      />
+    );
+  }
+
+  if (reason === "no-results") {
+    return (
+      <KiraEmpty
+        size="sm"
+        state="no-results"
+        query={ctx.searchQuery}
+        primaryAction={
+          ctx.onResetFilters
+            ? { label: "Reset filters", onClick: ctx.onResetFilters }
+            : undefined
+        }
+      />
+    );
+  }
+
+  return <KiraEmpty size="sm" state="no-data" />;
+}
+
+function DataTableEmptyRow<TData extends RowData>({
   colSpan,
   emptyState,
 }: {
   colSpan: number;
-  emptyState?: React.ReactNode;
+  emptyState?: DataTableContentProps<TData>["emptyState"];
 }) {
+  "use no memo";
+
+  const ctx = useDataTable<TData>();
+
   return (
     <tr>
-      <TableCell colSpan={colSpan} className="h-24 text-center">
-        {emptyState ?? (
-          <div className="flex flex-col items-center justify-center text-muted-foreground">
-            <IconInbox className="mb-2 size-8" aria-hidden="true" />
-            <span>No results found</span>
-          </div>
-        )}
+      <TableCell
+        colSpan={colSpan}
+        className="p-0 text-center whitespace-normal"
+      >
+        {resolveDataTableEmptyNode(emptyState, ctx)}
       </TableCell>
     </tr>
+  );
+}
+
+function DataTableInlineErrorBanner({
+  error,
+  onRetry,
+}: {
+  error: React.ReactNode;
+  onRetry?: () => void;
+}) {
+  return (
+    <div
+      data-slot="data-table-error"
+      role="alert"
+      className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+    >
+      <div className="flex min-w-0 items-center gap-2">
+        <IconAlertCircle className="size-4 shrink-0" aria-hidden="true" />
+        <span className="min-w-0 wrap-anywhere">{error}</span>
+      </div>
+      {onRetry && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onRetry}
+          className="shrink-0 pointer-coarse:min-h-11"
+        >
+          <IconRefresh className="size-4" aria-hidden="true" />
+          Retry
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function DataTableSkeletonBody({
+  rows,
+  colCount,
+}: {
+  rows: number;
+  colCount: number;
+}) {
+  return (
+    <TableBody aria-hidden="true" data-slot="data-table-skeleton-body">
+      {Array.from({ length: rows }, (_, r) => (
+        <TableRow key={`sk-row-${r}`}>
+          {Array.from({ length: colCount }, (__, c) => (
+            <TableCell key={`sk-cell-${r}-${c}`}>
+              <div
+                className="h-4 animate-skeleton-wave rounded bg-muted motion-reduce:animate-none"
+                style={{
+                  width: `${SKELETON_WIDTHS[(r + c) % SKELETON_WIDTHS.length]}%`,
+                }}
+              />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableBody>
   );
 }
 
@@ -949,20 +1173,37 @@ interface DataTableRowsProps<TData extends RowData> {
   onCellFocus: (pos: GridPos) => void;
   expandOnRowClick: boolean;
   renderSubComponent?: (props: { row: DTRow<TData> }) => React.ReactNode;
-  emptyState?: React.ReactNode;
+  emptyState?: DataTableContentProps<TData>["emptyState"];
+  isResizable?: boolean;
+  stickyHeader?: boolean;
+  isRefetching?: boolean;
+  pendingRowIds?: ReadonlySet<string>;
+  onRowClick?: (row: DTRow<TData>) => void;
 }
 
 function DataTableRows<TData extends RowData>({
   rows,
   colCount,
   emptyState,
+  isRefetching = false,
+  pendingRowIds,
   ...rowProps
 }: DataTableRowsProps<TData>) {
   return (
-    <TableBody>
+    <TableBody
+      className={cn(
+        isRefetching && "opacity-60 motion-safe:transition-opacity",
+      )}
+    >
       {rows.length ? (
         rows.map((row, i) => (
-          <DataTableRow key={row.id} row={row} rowIndex={i} {...rowProps} />
+          <DataTableRow
+            key={row.id}
+            row={row}
+            rowIndex={i}
+            isPending={Boolean(pendingRowIds?.has(row.id))}
+            {...rowProps}
+          />
         ))
       ) : (
         <DataTableEmptyRow colSpan={colCount} emptyState={emptyState} />
@@ -982,6 +1223,8 @@ function DataTableContent<TData extends RowData>(
 ) {
   const { enableVirtualization } = useDataTable<TData>();
 
+  if (props.view === "cards") return <DataTableCardList {...props} />;
+
   if (enableVirtualization) return <DataTableVirtualContent {...props} />;
 
   if (props.enableReordering) return <DataTableReorderableContent {...props} />;
@@ -989,12 +1232,55 @@ function DataTableContent<TData extends RowData>(
   return <DataTableStaticContent {...props} />;
 }
 
+function resolveStaticLoadFlags(
+  isLoading: boolean,
+  isFetching: boolean,
+  rowCount: number,
+  pageSize: number,
+  skeletonRows?: number,
+) {
+  const showInitialSkeleton = isLoading && rowCount === 0;
+  const isRefetching = (isFetching || isLoading) && rowCount > 0;
+
+  return {
+    showInitialSkeleton,
+    isRefetching,
+    isBusy: isRefetching || showInitialSkeleton,
+    skeletonCount: skeletonRows ?? Math.max(1, Math.min(pageSize, 12)),
+  };
+}
+
+function DataTableRefetchBar({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+
+  return (
+    <div
+      aria-hidden="true"
+      data-slot="data-table-refetch-bar"
+      className="pointer-events-none absolute inset-x-0 top-0 z-30 h-1 overflow-hidden rounded-t-lg bg-primary/20"
+    >
+      <div className="h-full w-1/2 bg-primary animate-shimmer motion-reduce:animate-none" />
+    </div>
+  );
+}
+
 function DataTableStaticContent<TData extends RowData>(
   props: DataTableContentProps<TData>,
 ) {
-  const { table, enableKeyboardNavigation } = useDataTable<TData>();
-  useTableState(table);
+  "use no memo";
 
+  const {
+    table,
+    enableKeyboardNavigation,
+    isLoading,
+    isFetching,
+    error,
+    onRetry,
+    onRowClick,
+    pendingRowIds,
+  } = useDataTable<TData>();
+
+  const state = useTableState(table);
   const rows = table.getRowModel().rows;
   const colCount = table.getVisibleLeafColumns().length;
   const tableRef = React.useRef<HTMLTableElement>(null);
@@ -1006,32 +1292,61 @@ function DataTableStaticContent<TData extends RowData>(
     tableRef,
   });
 
+  const isResizable = Boolean(table.options.enableColumnResizing);
+
   const isResizing = table
     .getVisibleLeafColumns()
     .some((c) => c.getIsResizing());
 
   const Rows = isResizing ? DataTableRowsMemo : DataTableRows;
 
+  const load = resolveStaticLoadFlags(
+    isLoading,
+    isFetching,
+    rows.length,
+    state.pagination.pageSize,
+    props.skeletonRows,
+  );
+
   return (
-    <DataTableFrame
-      content={props}
-      isGrid={enableKeyboardNavigation}
-      rowCount={rows.length}
-      tableRef={tableRef}
-      onKeyDown={nav.onKeyDown}
-    >
-      <Rows
-        rows={rows}
-        colCount={colCount}
+    <div data-slot="data-table-content" className="relative min-w-0">
+      {error && rows.length > 0 && (
+        <DataTableInlineErrorBanner error={error} onRetry={onRetry} />
+      )}
+      <DataTableRefetchBar visible={load.isRefetching} />
+      <DataTableFrame
+        content={props}
         isGrid={enableKeyboardNavigation}
-        activeRow={nav.activeRow}
-        activeCol={nav.activeCol}
-        onCellFocus={nav.setActive}
-        expandOnRowClick={!!props.expandOnRowClick}
-        renderSubComponent={props.renderSubComponent}
-        emptyState={props.emptyState}
-      />
-    </DataTableFrame>
+        rowCount={rows.length}
+        tableRef={tableRef}
+        onKeyDown={nav.onKeyDown}
+        isFetching={load.isBusy}
+      >
+        {load.showInitialSkeleton ? (
+          <DataTableSkeletonBody
+            rows={load.skeletonCount}
+            colCount={colCount}
+          />
+        ) : (
+          <Rows
+            rows={rows}
+            colCount={colCount}
+            isGrid={enableKeyboardNavigation}
+            activeRow={nav.activeRow}
+            activeCol={nav.activeCol}
+            onCellFocus={nav.setActive}
+            expandOnRowClick={Boolean(props.expandOnRowClick)}
+            renderSubComponent={props.renderSubComponent}
+            emptyState={props.emptyState}
+            isResizable={isResizable}
+            stickyHeader={Boolean(props.stickyHeader)}
+            isRefetching={load.isRefetching}
+            pendingRowIds={pendingRowIds}
+            onRowClick={onRowClick}
+          />
+        )}
+      </DataTableFrame>
+    </div>
   );
 }
 
@@ -1203,6 +1518,8 @@ function renderDataTableVirtualSpacer(height: number, colCount: number) {
 function DataTableReorderableContent<TData extends RowData>(
   props: DataTableContentProps<TData>,
 ) {
+  "use no memo";
+
   const { table, enableKeyboardNavigation } = useDataTable<TData>();
   const state = useTableState(table);
 
@@ -1321,6 +1638,8 @@ interface DataTableCountProps {
 }
 
 function DataTablePageCount({ className }: DataTableCountProps = {}) {
+  "use no memo";
+
   const { table } = useDataTable();
   const state = useTableState(table);
 
@@ -1339,6 +1658,8 @@ function DataTablePageCount({ className }: DataTableCountProps = {}) {
 }
 
 function DataTableRowCount({ className }: DataTableCountProps = {}) {
+  "use no memo";
+
   const { table } = useDataTable();
   useTableState(table);
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
@@ -1365,18 +1686,24 @@ interface DataTablePaginationProps {
   showPageSize?: boolean;
   pageSizeOptions?: readonly number[];
   showPageInfo?: boolean;
+  infoFormat?: string;
+  showJump?: boolean;
   showPreviousNextText?: boolean;
   showFirstLast?: boolean;
-  variant?: "default" | "outline" | "ghost";
+  variant?: "default" | "outline" | "ghost" | "pills" | "rounded";
   size?: "sm" | "default" | "lg";
   className?: string;
 }
 
 function DataTablePagination(input: DataTablePaginationProps) {
+  "use no memo";
+
   const {
     showPageSize,
     pageSizeOptions,
     showPageInfo,
+    infoFormat,
+    showJump,
     showFirstLast,
     showPreviousNextText,
     variant,
@@ -1400,6 +1727,8 @@ function DataTablePagination(input: DataTablePaginationProps) {
       showSizeSelector={showPageSize}
       pageSizeOptions={pageSizeOptions}
       showInfo={showPageInfo}
+      infoFormat={infoFormat}
+      showJump={showJump}
       infoMobileCompact
       showEdges={showFirstLast}
       showLabels={showPreviousNextText}
@@ -1426,6 +1755,8 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
   className,
   showPinning = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  "use no memo";
+
   const tableContext = React.useContext(DataTableContext);
   const registerColumnLabel = tableContext?.registerColumnLabel;
 
@@ -1467,8 +1798,8 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
 
   if (!column.getCanSort()) {
     return (
-      <div className={cn("flex items-center gap-2", className)}>
-        <span>{title}</span>
+      <div className={cn("flex min-w-0 items-center gap-2", className)}>
+        <span className="truncate">{title}</span>
         {pinMenu}
       </div>
     );
@@ -1484,15 +1815,15 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
   const next = resolveNext3();
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex min-w-0 items-center gap-2", className)}>
       <button
         type="button"
         onClick={handleSort}
         aria-label={`${title}, sort ${next === "none" ? "off" : next}`}
-        className="-ml-3 flex items-center gap-1 rounded-md px-3 py-1.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="-ml-3 flex min-w-0 max-w-full items-center gap-1 rounded-md px-3 py-1.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        {title}
-        {resolveValue4()}
+        <span className="truncate">{title}</span>
+        <span className="shrink-0">{resolveValue4()}</span>
       </button>
       {pinMenu}
     </div>
@@ -1506,6 +1837,8 @@ function DataTableResizeHandle<TData extends RowData, TValue>({
 }: {
   header: DTHeader<TData, TValue>;
 }) {
+  "use no memo";
+
   const tableContext = React.useContext(DataTableContext);
   const column = header.column;
   const { table } = header.getContext();
@@ -1569,6 +1902,8 @@ function DataTableColumnPinningMenu<TData extends RowData, TValue>({
 }: {
   column: DTColumn<TData, TValue>;
 }) {
+  "use no memo";
+
   const tableContext = React.useContext(DataTableContext);
   const pinned = column.getIsPinned(); // "start" | "end" | false
 
@@ -1659,6 +1994,7 @@ function createSelectColumn<TData extends RowData>(): DTColumnDef<TData> {
     ),
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 48,
     minSize: 48,
     maxSize: 48,
@@ -1695,6 +2031,7 @@ function createExpandColumn<TData extends RowData>(): DTColumnDef<TData> {
     },
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 48,
     minSize: 48,
     maxSize: 48,
@@ -1714,6 +2051,7 @@ function createDragHandleColumn<TData extends RowData>(): DTColumnDef<TData> {
     ),
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 40,
     minSize: 40,
     maxSize: 40,
@@ -1721,6 +2059,8 @@ function createDragHandleColumn<TData extends RowData>(): DTColumnDef<TData> {
 }
 
 function DataTableColumnVisibility() {
+  "use no memo";
+
   const { table, columnLabels } = useDataTable();
   useTableState(table);
 
@@ -1752,6 +2092,8 @@ function DataTableColumnVisibility() {
 }
 
 function DataTablePinningControls() {
+  "use no memo";
+
   const { table } = useDataTable();
   useTableState(table);
   const columns = table.getAllLeafColumns();
@@ -1915,6 +2257,8 @@ function DataTableFacetedFilter<TData extends RowData, TValue>({
   options,
   className,
 }: DataTableFacetedFilterProps<TData, TValue>) {
+  "use no memo";
+
   const value = useColumnFilterValue(column?.id);
   const selected = new Set(Array.isArray(value) ? value.map(String) : []);
 
@@ -2551,11 +2895,13 @@ function DataTableBulkActions({
 }
 
 interface RowAction<TData> {
+  id?: string;
   label: string;
   icon?: React.ReactNode;
   onClick: (row: TData) => void;
   destructive?: boolean;
   disabled?: boolean;
+  hidden?: boolean;
   separator?: boolean;
 }
 
@@ -2565,6 +2911,8 @@ interface DataTableRowActionsProps<TData> {
   className?: string;
   /** Accessible name, e.g. "Actions for Jane Doe". */
   label?: string;
+  /** Disables the trigger and shows a spinner while an async row action runs. */
+  pending?: boolean;
 }
 
 function DataTableRowActions<TData>({
@@ -2572,7 +2920,12 @@ function DataTableRowActions<TData>({
   actions,
   className,
   label = "Row actions",
+  pending = false,
 }: DataTableRowActionsProps<TData>) {
+  const visibleActions = actions.filter((action) => !action.hidden);
+
+  if (visibleActions.length === 0) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -2580,21 +2933,30 @@ function DataTableRowActions<TData>({
           <Button
             variant="ghost"
             size="sm"
-            className={cn("size-8 p-0", className)}
+            disabled={pending}
+            aria-busy={pending || undefined}
+            className={cn(
+              "size-8 p-0 pointer-coarse:min-h-11 pointer-coarse:min-w-11",
+              className,
+            )}
             aria-label={label}
           >
-            <IconDotsVertical className="size-4" aria-hidden="true" />
+            {pending ? (
+              <Spinner size="sm" aria-hidden="true" />
+            ) : (
+              <IconDotsVertical className="size-4" aria-hidden="true" />
+            )}
           </Button>
         }
       />
       <DropdownMenuContent align="end">
-        {actions.map((action, index) => (
-          <React.Fragment key={action.label}>
+        {visibleActions.map((action, index) => (
+          <React.Fragment key={action.id ?? action.label}>
             {action.separator && index > 0 && <DropdownMenuSeparator />}
             <DropdownMenuItem
               onClick={() => action.onClick(row)}
-              disabled={action.disabled}
-              className={cn(action.destructive && "text-destructive")}
+              disabled={action.disabled || pending}
+              variant={action.destructive ? "destructive" : "default"}
             >
               {action.icon && (
                 <span className="mr-2" aria-hidden="true">
@@ -2876,14 +3238,14 @@ function AvatarCell({
   className,
 }: AvatarCellProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <Avatar className={avatarSizeStyles[size]}>
+    <div className={cn("flex min-w-0 items-center gap-2", className)}>
+      <Avatar className={cn("shrink-0", avatarSizeStyles[size])}>
         {src && <AvatarImage src={src} alt={showName ? "" : name} />}
         <AvatarFallback className="text-xs" aria-hidden={showName}>
           {getInitials(name)}
         </AvatarFallback>
       </Avatar>
-      {showName && <span>{name}</span>}
+      {showName && <span className="truncate">{name}</span>}
     </div>
   );
 }
@@ -3021,6 +3383,9 @@ export {
   DataTableRoot,
   DataTableSearch,
   DataTableContent,
+  DataTableCardList,
+  DataTableFilterBar,
+  DataTableActiveFilters,
   DataTablePageCount,
   DataTableRowCount,
   DataTablePagination,
@@ -3030,6 +3395,7 @@ export {
   DataTableColumnHeader,
   DataTableResizeHandle,
   DataTableFacetedFilter,
+  KiraDataTable,
   createSelectColumn,
   createExpandColumn,
   createDragHandleColumn,
@@ -3050,6 +3416,7 @@ export {
   dateRangeFilterFn,
   dataTableFeatures,
   useDataTable,
+  useDataTableFilters,
 };
 
 export type {
@@ -3059,6 +3426,18 @@ export type {
   DTColumn,
   DataTableProps,
   DataTableContentProps,
+  DataTableEmptyReason,
+  DataTableEmptyContext,
+  DataTableFilterMode,
+  DataTableFilterLayout,
+  DataTableFilterOption,
+  DataTableFilterField,
+  DataTableFilterBarProps,
+  DataTableActiveFiltersProps,
+  UseDataTableFiltersOptions,
+  UseDataTableFiltersReturn,
+  DataTablePreset,
+  KiraDataTableProps,
   DataTableCountProps,
   DataTableSearchProps,
   DataTablePaginationProps,
@@ -3097,7 +3476,68 @@ type renderDataTableRowSectionPart1Args<TData extends RowData> = {
   activeCol: DataTableRowProps<TData>["activeCol"];
   onCellFocus: DataTableRowProps<TData>["onCellFocus"];
   dragHandleProps: DataTableRowProps<TData>["dragHandleProps"];
+  isResizable: boolean;
+  stickyHeader: boolean;
+  isPending: boolean;
+  onRowClick?: (row: DTRow<TData>) => void;
 };
+
+function resolveGridCellTabIndex(
+  isGrid: boolean,
+  isActive: boolean,
+): 0 | -1 | undefined {
+  if (!isGrid) return undefined;
+
+  return isActive ? 0 : -1;
+}
+
+function renderDataTableRowCell<TData extends RowData>({
+  cell,
+  colIndex,
+  rowIndex,
+  activeRow,
+  activeCol,
+  isGrid,
+  isResizable,
+  onCellFocus,
+  dragHandleProps,
+}: {
+  cell: ReturnType<DTRow<TData>["getVisibleCells"]>[number];
+  colIndex: number;
+  rowIndex: number;
+  activeRow: number;
+  activeCol: number;
+  isGrid: boolean;
+  isResizable: boolean;
+  onCellFocus: DataTableRowProps<TData>["onCellFocus"];
+  dragHandleProps: DataTableRowProps<TData>["dragHandleProps"];
+}) {
+  const isDragHandle = cell.column.id === "drag";
+  const isActive = rowIndex === activeRow && colIndex === activeCol;
+
+  return (
+    <TableCell
+      key={cell.id}
+      isGridCell={isGrid}
+      data-grid-cell={isGrid ? `${rowIndex}:${colIndex}` : undefined}
+      tabIndex={resolveGridCellTabIndex(isGrid, isActive)}
+      onFocus={isGrid ? () => onCellFocus?.({ rowIndex, colIndex }) : undefined}
+      {...pinProps(cell.column)}
+      className={cn(
+        isResizable && "overflow-hidden text-ellipsis",
+        isGrid &&
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+        isDragHandle && "cursor-grab touch-none active:cursor-grabbing",
+      )}
+      style={{
+        width: `calc(var(--col-${cssId(cell.column.id)}-size) * 1px)`,
+      }}
+      {...(isDragHandle ? dragHandleProps : undefined)}
+    >
+      <FlexRender cell={cell} />
+    </TableCell>
+  );
+}
 
 function renderDataTableRowSectionPart1<TData extends RowData>({
   rowRef,
@@ -3114,7 +3554,13 @@ function renderDataTableRowSectionPart1<TData extends RowData>({
   activeCol,
   onCellFocus,
   dragHandleProps,
+  isResizable,
+  stickyHeader,
+  isPending,
+  onRowClick,
 }: renderDataTableRowSectionPart1Args<TData>) {
+  const isRowClickable = clickToExpand || Boolean(onRowClick);
+
   return (
     <TableRow
       ref={rowRef}
@@ -3123,59 +3569,38 @@ function renderDataTableRowSectionPart1<TData extends RowData>({
       isSelected={row.getIsSelected()}
       isGridRow={isGrid}
       aria-rowindex={ariaRowIndex}
+      aria-busy={isPending || undefined}
+      data-pending={isPending ? "true" : undefined}
       className={cn(
-        clickToExpand && "cursor-pointer",
+        isRowClickable && "cursor-pointer",
+        stickyHeader && "scroll-mt-12",
+        isPending && "opacity-60",
         isDragging && "relative z-20 opacity-80",
       )}
       onClick={
-        clickToExpand
+        isRowClickable
           ? (event) => {
-              // Clicking a checkbox/button/menu inside the row must not expand it.
-              if (!isInteractiveTarget(event.target)) row.toggleExpanded();
+              if (isInteractiveTarget(event.target)) return;
+
+              if (clickToExpand) row.toggleExpanded();
+              onRowClick?.(row);
             }
           : undefined
       }
     >
-      {cells.map((cell, colIndex) => {
-        const resolveTabIndex2 = () => {
-          if (isGrid) {
-            if (isActive) {
-              return 0 as const;
-            }
-
-            return -1;
-          }
-
-          return undefined;
-        };
-
-        const isDragHandle = cell.column.id === "drag";
-        const isActive = rowIndex === activeRow && colIndex === activeCol;
-
-        return (
-          <TableCell
-            key={cell.id}
-            isGridCell={isGrid}
-            data-grid-cell={isGrid ? `${rowIndex}:${colIndex}` : undefined}
-            tabIndex={resolveTabIndex2()}
-            onFocus={
-              isGrid ? () => onCellFocus?.({ rowIndex, colIndex }) : undefined
-            }
-            {...pinProps(cell.column)}
-            className={cn(
-              isGrid &&
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-              isDragHandle && "cursor-grab touch-none active:cursor-grabbing",
-            )}
-            style={{
-              width: `calc(var(--col-${cssId(cell.column.id)}-size) * 1px)`,
-            }}
-            {...(isDragHandle ? dragHandleProps : undefined)}
-          >
-            <FlexRender cell={cell} />
-          </TableCell>
-        );
-      })}
+      {cells.map((cell, colIndex) =>
+        renderDataTableRowCell({
+          cell,
+          colIndex,
+          rowIndex,
+          activeRow,
+          activeCol,
+          isGrid,
+          isResizable,
+          onCellFocus,
+          dragHandleProps,
+        }),
+      )}
     </TableRow>
   );
 }
@@ -3546,6 +3971,7 @@ const DATA_TABLE_PAGINATION_DEFAULTS_1 = {
   showPageSize: false,
   pageSizeOptions: [10, 20, 30, 40, 50],
   showPageInfo: false,
+  showJump: false,
   showFirstLast: true,
   showPreviousNextText: false,
   variant: "outline",
@@ -3611,10 +4037,10 @@ function getServerPaginationOptions({
   };
 }
 
-function useDataTableSetup<TData extends RowData, TValue>(
+function resolveDataTableSetupProps<TData extends RowData, TValue>(
   input: DataTableProps<TData, TValue>,
 ) {
-  const resolvedProps = resolveComponentDefaults(input, {
+  return resolveComponentDefaults(input, {
     enableSorting: true,
     enableFiltering: true,
     enablePagination: true,
@@ -3629,70 +4055,127 @@ function useDataTableSetup<TData extends RowData, TValue>(
     density: "default",
     initialPageSize: 10,
     initialSorting: EMPTY_SORTING,
+    manualSorting: false,
     containerHeight: 500,
     isLoading: false,
+    isFetching: false,
     hasNextPage: false,
+    hasActiveFilters: false,
     persistStateVersion: DEFAULT_PERSIST_VERSION,
   });
+}
 
-  const {
-    columns,
-    data,
-    getRowId,
-    enableSorting,
-    enableFiltering,
-    enablePagination,
-    enableRowSelection,
-    enableColumnPinning,
-    enableColumnResizing,
-    enableExpanding,
-    enableGrouping,
-    enableVirtualization,
-    initialPageSize,
+interface DataTableControlledState {
+  pagination?: PaginationState;
+  sorting?: SortingState;
+}
+
+interface DataTableInitialState {
+  sorting: SortingState;
+  pagination: PaginationState;
+  columnPinning?: ColumnPinningState;
+}
+
+function buildDataTableControlledState(
+  serverPagination: DataTableProps<RowData, unknown>["serverPagination"],
+  sorting: SortingState | undefined,
+): DataTableControlledState | undefined {
+  const controlled: DataTableControlledState = {};
+
+  if (serverPagination) controlled.pagination = serverPagination.state;
+
+  if (sorting) controlled.sorting = sorting;
+
+  return Object.keys(controlled).length > 0 ? controlled : undefined;
+}
+
+function buildDataTableInitialState(
+  initialSorting: SortingState,
+  initialPageSize: number,
+  initialColumnPinning?: Partial<ColumnPinningState>,
+): DataTableInitialState {
+  const initialState: DataTableInitialState = {
+    sorting: initialSorting,
+    pagination: { pageIndex: 0, pageSize: initialPageSize },
+  };
+
+  if (initialColumnPinning) {
+    initialState.columnPinning = {
+      start: initialColumnPinning.start ?? [],
+      end: initialColumnPinning.end ?? [],
+    };
+  }
+
+  return initialState;
+}
+
+function buildDataTableOptions<TData extends RowData, TValue>(
+  resolvedProps: ReturnType<typeof resolveDataTableSetupProps<TData, TValue>>,
+) {
+  const { serverPagination, sorting, onSortingChange } = resolvedProps;
+
+  const serverOpts = serverPagination
+    ? getServerPaginationOptions(serverPagination)
+    : undefined;
+
+  const controlledState = buildDataTableControlledState(
     serverPagination,
-    isLoading,
-    initialSorting,
-    getSubRows,
-    getRowCanExpand,
-  } = resolvedProps;
-
-  const table = useTable(
-    {
-      features: dataTableFeatures,
-      data,
-      columns: createColumnHelper<DTFeatures, TData>().columns(columns),
-      getRowId,
-      getSubRows,
-      getRowCanExpand,
-      enableSorting,
-      enableSortingRemoval: true,
-      enableColumnFilters: enableFiltering,
-      enableGlobalFilter: enableFiltering,
-      enableRowSelection,
-      enableColumnPinning,
-      enableColumnResizing,
-      columnResizeMode: "onChange",
-      enableExpanding,
-      enableGrouping,
-      // The virtualizer needs every row; manual pagination bypasses the
-      // paginated row model (previously it silently capped rows at pageSize).
-      manualPagination:
-        !enablePagination || enableVirtualization || Boolean(serverPagination),
-      ...(serverPagination && getServerPaginationOptions(serverPagination)),
-      initialState: {
-        sorting: initialSorting,
-        pagination: { pageIndex: 0, pageSize: initialPageSize },
-      },
-    },
-    // Root never needs to re-render on table state: consumers subscribe
-    // themselves, so `children` updates without prop drilling.
-    () => null,
+    sorting,
   );
 
-  // Controlled pagination clamps the rendered view only; when the server
-  // total shrinks below the current page, notify the owner so its state
-  // (and the next fetch) follows. Skipped while loading: rowCount may be
-  // stale mid-fetch.
+  const initialState = buildDataTableInitialState(
+    resolvedProps.initialSorting,
+    resolvedProps.initialPageSize,
+    resolvedProps.initialColumnPinning,
+  );
+
+  const sortingHandler = onSortingChange
+    ? (updater: Updater<SortingState>) => {
+        onSortingChange(functionalUpdate(updater, sorting ?? EMPTY_SORTING));
+      }
+    : undefined;
+
+  return {
+    features: dataTableFeatures,
+    data: resolvedProps.data,
+    columns: createColumnHelper<DTFeatures, TData>().columns(
+      resolvedProps.columns,
+    ),
+    getRowId: resolvedProps.getRowId,
+    getSubRows: resolvedProps.getSubRows,
+    getRowCanExpand: resolvedProps.getRowCanExpand,
+    enableSorting: resolvedProps.enableSorting,
+    enableSortingRemoval: true,
+    manualSorting: resolvedProps.manualSorting,
+    enableColumnFilters: resolvedProps.enableFiltering,
+    enableGlobalFilter: resolvedProps.enableFiltering,
+    enableRowSelection: resolvedProps.enableRowSelection,
+    enableColumnPinning: resolvedProps.enableColumnPinning,
+    enableColumnResizing: resolvedProps.enableColumnResizing,
+    columnResizeMode: "onChange" as const,
+    enableExpanding: resolvedProps.enableExpanding,
+    enableGrouping: resolvedProps.enableGrouping,
+    manualPagination:
+      !resolvedProps.enablePagination ||
+      resolvedProps.enableVirtualization ||
+      Boolean(serverPagination),
+    rowCount: serverOpts?.rowCount,
+    onPaginationChange: serverOpts?.onPaginationChange,
+    onSortingChange: sortingHandler,
+    state: controlledState,
+    initialState,
+  };
+}
+
+function useDataTableSetup<TData extends RowData, TValue>(
+  input: DataTableProps<TData, TValue>,
+) {
+  "use no memo";
+
+  const resolvedProps = resolveDataTableSetupProps(input);
+  const { serverPagination, isLoading } = resolvedProps;
+  const table = useTable(buildDataTableOptions(resolvedProps), () => null);
+
   React.useEffect(() => {
     if (!serverPagination || isLoading) return;
     const { rowCount, state } = serverPagination;
@@ -3821,70 +4304,57 @@ function useTableAnnouncements<TData extends RowData>(
   }, [table, announceChanges, setAnnouncement]);
 }
 
-function useDataTableActions<TData extends RowData, TValue>(
+function buildDataTableContextValue<TData extends RowData, TValue>(
   state: ReturnType<typeof useDataTableState2<TData, TValue>>,
-) {
-  const {
-    enablePagination,
-    enableVirtualization,
-    enableKeyboardNavigation,
-    announceChanges,
-    estimateRowHeight,
-    containerHeight,
-    onLoadMore,
-    isLoading,
-    hasNextPage,
-    serverPagination,
-    table,
-    densityState,
-    setDensity,
-    columnLabels,
-    registerColumnLabel,
-    setAnnouncement,
-  } = state;
-
-  useTableAnnouncements(table, announceChanges, columnLabels, setAnnouncement);
-
+): DataTableContextValue<RowData> {
   // SAFETY: the provider below serves this exact table instance, so reading
   // the context inside this provider yields this TData; the context type
   // erases TData to RowData to keep one shared context object.
-  const contextTable = table as DTTable<RowData>;
-  const serverPaged = Boolean(serverPagination);
+  const contextTable = state.table as DTTable<RowData>;
 
-  const contextValue = React.useMemo<DataTableContextValue<RowData>>(
-    () => ({
-      table: contextTable,
-      density: densityState,
-      setDensity,
-      columnLabels,
-      registerColumnLabel,
-      enablePagination:
-        enablePagination && (!enableVirtualization || serverPaged),
-      enableVirtualization,
-      enableKeyboardNavigation,
-      estimateRowHeight,
-      containerHeight,
-      onLoadMore,
-      isLoading,
-      hasNextPage,
-    }),
-    [
-      contextTable,
-      densityState,
-      setDensity,
-      columnLabels,
-      registerColumnLabel,
-      enablePagination,
-      enableVirtualization,
-      serverPaged,
-      enableKeyboardNavigation,
-      estimateRowHeight,
-      containerHeight,
-      onLoadMore,
-      isLoading,
-      hasNextPage,
-    ],
+  // SAFETY: same TData erasure as contextTable for the shared context provider.
+  const contextRowClick = state.onRowClick as
+    ((row: DTRow<RowData>) => void) | undefined;
+
+  const serverPaged = Boolean(state.serverPagination);
+
+  return {
+    table: contextTable,
+    density: state.densityState,
+    setDensity: state.setDensity,
+    columnLabels: state.columnLabels,
+    registerColumnLabel: state.registerColumnLabel,
+    enablePagination:
+      state.enablePagination && (!state.enableVirtualization || serverPaged),
+    enableVirtualization: state.enableVirtualization,
+    enableKeyboardNavigation: state.enableKeyboardNavigation,
+    estimateRowHeight: state.estimateRowHeight,
+    containerHeight: state.containerHeight,
+    onLoadMore: state.onLoadMore,
+    isLoading: state.isLoading,
+    isFetching: state.isFetching,
+    hasNextPage: state.hasNextPage,
+    error: state.error,
+    onRetry: state.onRetry,
+    hasActiveFilters: state.hasActiveFilters,
+    onResetFilters: state.onResetFilters,
+    searchQuery: state.searchQuery,
+    onRowClick: contextRowClick,
+    pendingRowIds: state.pendingRowIds,
+  };
+}
+
+function useDataTableActions<TData extends RowData, TValue>(
+  state: ReturnType<typeof useDataTableState2<TData, TValue>>,
+) {
+  useTableAnnouncements(
+    state.table,
+    state.announceChanges,
+    state.columnLabels,
+    state.setAnnouncement,
   );
+
+  const contextValue = buildDataTableContextValue(state);
 
   return { ...state, contextValue };
 }
@@ -4039,5 +4509,1656 @@ function renderEditableCellView({
       onKeyDown={handleKeyDown}
       className={cn("h-auto py-1", className)}
     />
+  );
+}
+
+type DataTableFilterMode = "manual" | "live";
+
+type DataTableFilterLayout = "toolbar" | "sidebar" | "stacked";
+
+interface DataTableFilterOption {
+  value: string;
+  label: string;
+}
+
+type DataTableFilterField =
+  | {
+      kind: "search";
+      key: string;
+      label: string;
+      placeholder?: string;
+    }
+  | {
+      kind: "select";
+      key: string;
+      label: string;
+      placeholder?: string;
+      allLabel?: string;
+      options: readonly DataTableFilterOption[];
+    }
+  | {
+      kind: "chips";
+      key: string;
+      label: string;
+      options: readonly DataTableFilterOption[];
+    }
+  | {
+      kind: "date-range";
+      fromKey: string;
+      toKey: string;
+      label: string;
+    };
+
+interface UseDataTableFiltersOptions<TFilters extends Record<string, string>> {
+  defaultValues: TFilters;
+  /** Optional externally owned applied state (e.g. from URL search params). */
+  applied?: TFilters;
+  mode?: DataTableFilterMode;
+  debounceMs?: number;
+  /** True when the caller's sort state differs from its default sort. */
+  isSortModified?: boolean;
+  onApply?: (
+    next: TFilters,
+    meta: { source: "manual" | "live" | "clear" },
+  ) => void;
+  onReset?: () => void;
+}
+
+interface UseDataTableFiltersReturn<TFilters extends Record<string, string>> {
+  draft: TFilters;
+  applied: TFilters;
+  defaultValues: TFilters;
+  mode: DataTableFilterMode;
+  isDirty: boolean;
+  activeCount: number;
+  hasActiveFilters: boolean;
+  canReset: boolean;
+  setField: (key: keyof TFilters & string, value: string) => void;
+  apply: () => void;
+  reset: () => void;
+  clearField: (key: keyof TFilters & string) => void;
+}
+
+function areFilterRecordsEqual<TFilters extends Record<string, string>>(
+  a: TFilters,
+  b: TFilters,
+): boolean {
+  const keys = Object.keys(a);
+
+  for (const key of keys) {
+    if ((a[key] ?? "") !== (b[key] ?? "")) return false;
+  }
+
+  return true;
+}
+
+function countNonDefaultFilters<TFilters extends Record<string, string>>(
+  values: TFilters,
+  defaults: TFilters,
+): number {
+  let count = 0;
+
+  for (const key of Object.keys(defaults)) {
+    if ((values[key] ?? "").trim() !== (defaults[key] ?? "").trim()) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+
+function deriveFilterFlags<TFilters extends Record<string, string>>(
+  draft: TFilters,
+  applied: TFilters,
+  defaultValues: TFilters,
+  isSortModified: boolean,
+) {
+  const isDirty = !areFilterRecordsEqual(draft, applied);
+  const activeCount = countNonDefaultFilters(applied, defaultValues);
+  const draftCount = countNonDefaultFilters(draft, defaultValues);
+  const hasActiveFilters = activeCount > 0;
+  const canReset = hasActiveFilters || draftCount > 0 || isSortModified;
+
+  return { isDirty, activeCount, hasActiveFilters, canReset };
+}
+
+function useFilterCommitter<TFilters extends Record<string, string>>(
+  controlledApplied: TFilters | undefined,
+  setInternalApplied: React.Dispatch<React.SetStateAction<TFilters>>,
+  onApply: UseDataTableFiltersOptions<TFilters>["onApply"],
+) {
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+
+  const onApplyRef = React.useRef(onApply);
+  React.useEffect(() => {
+    onApplyRef.current = onApply;
+  });
+
+  React.useEffect(
+    () => () => {
+      clearTimeout(timerRef.current);
+    },
+    [],
+  );
+
+  const commit = React.useCallback(
+    (next: TFilters, source: "manual" | "live" | "clear") => {
+      clearTimeout(timerRef.current);
+
+      if (controlledApplied === undefined) setInternalApplied(next);
+
+      onApplyRef.current?.(next, { source });
+    },
+    [controlledApplied, setInternalApplied],
+  );
+
+  return { timerRef, commit };
+}
+
+function useDataTableFilters<TFilters extends Record<string, string>>({
+  defaultValues,
+  applied: controlledApplied,
+  mode = "manual",
+  debounceMs = 250,
+  isSortModified = false,
+  onApply,
+  onReset,
+}: UseDataTableFiltersOptions<TFilters>): UseDataTableFiltersReturn<TFilters> {
+  const [internalApplied, setInternalApplied] = React.useState<TFilters>(
+    () => controlledApplied ?? defaultValues,
+  );
+
+  const applied = controlledApplied ?? internalApplied;
+  const [draft, setDraft] = React.useState<TFilters>(() => applied);
+  const [prevApplied, setPrevApplied] = React.useState<TFilters>(applied);
+
+  if (!areFilterRecordsEqual(applied, prevApplied)) {
+    setPrevApplied(applied);
+    setDraft(applied);
+  }
+
+  const { timerRef, commit } = useFilterCommitter(
+    controlledApplied,
+    setInternalApplied,
+    onApply,
+  );
+
+  const setField = React.useCallback(
+    (key: keyof TFilters & string, value: string) => {
+      setDraft((prev) => {
+        const next = { ...prev, [key]: value };
+
+        if (mode === "live") {
+          clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => commit(next, "live"), debounceMs);
+        }
+
+        return next;
+      });
+    },
+    [mode, debounceMs, commit, timerRef],
+  );
+
+  const apply = React.useCallback(
+    () => commit(draft, "manual"),
+    [commit, draft],
+  );
+
+  const reset = React.useCallback(() => {
+    clearTimeout(timerRef.current);
+    setDraft(defaultValues);
+
+    if (controlledApplied === undefined) setInternalApplied(defaultValues);
+
+    onReset?.();
+  }, [controlledApplied, defaultValues, onReset, timerRef]);
+
+  const clearField = React.useCallback(
+    (key: keyof TFilters & string) => {
+      const nextValue = defaultValues[key] ?? "";
+      setDraft({ ...draft, [key]: nextValue });
+      commit({ ...applied, [key]: nextValue }, "clear");
+    },
+    [applied, commit, defaultValues, draft],
+  );
+
+  const flags = deriveFilterFlags(
+    draft,
+    applied,
+    defaultValues,
+    isSortModified,
+  );
+
+  return {
+    draft,
+    applied,
+    defaultValues,
+    mode,
+    ...flags,
+    setField,
+    apply,
+    reset,
+    clearField,
+  };
+}
+
+const ALL_SELECT_VALUE = "__all__";
+
+interface DataTableFilterBarProps<TFilters extends Record<string, string>> {
+  fields: readonly DataTableFilterField[];
+  filterState: UseDataTableFiltersReturn<TFilters>;
+  layout?: DataTableFilterLayout;
+  /** Overrides filterState.mode for action button rendering. */
+  mode?: DataTableFilterMode;
+  /** Focuses the search input when pressing "/" outside editable controls. */
+  enableSlashShortcut?: boolean;
+  searchButtonLabel?: string;
+  resetButtonLabel?: string;
+  liveHelperText?: string;
+  className?: string;
+}
+
+function isEditableElement(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+
+  return (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    target.isContentEditable ||
+    Boolean(target.closest("[role=dialog],[role=alertdialog]"))
+  );
+}
+
+function useSlashSearchFocus(
+  enabled: boolean,
+  inputRef: React.RefObject<HTMLInputElement | null>,
+) {
+  React.useEffect(() => {
+    if (!enabled) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key !== "/" ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        isEditableElement(event.target)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      inputRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [enabled, inputRef]);
+}
+
+function FilterSearchControl({
+  id,
+  field,
+  value,
+  inputRef,
+  enableSlashShortcut,
+  onChange,
+  onClear,
+}: {
+  id: string;
+  field: Extract<DataTableFilterField, { kind: "search" }>;
+  value: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  enableSlashShortcut: boolean;
+  onChange: (value: string) => void;
+  onClear: () => void;
+}) {
+  const [focused, setFocused] = React.useState(false);
+
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <Label htmlFor={id} size="sm">
+        {field.label}
+      </Label>
+      <div className="relative flex items-center">
+        <IconSearch
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 size-4 text-muted-foreground"
+        />
+        <Input
+          ref={inputRef}
+          id={id}
+          type="search"
+          value={value}
+          placeholder={field.placeholder ?? "Search..."}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onChange={(event) => onChange(event.target.value)}
+          className="pl-9 pr-9 [&::-webkit-search-cancel-button]:hidden pointer-coarse:min-h-11"
+        />
+        {value ? (
+          <button
+            type="button"
+            onClick={onClear}
+            aria-label={`Clear ${field.label}`}
+            className="absolute right-2 inline-flex size-6 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:min-h-11 pointer-coarse:min-w-11"
+          >
+            <IconX className="size-4" aria-hidden="true" />
+          </button>
+        ) : (
+          enableSlashShortcut &&
+          !focused && (
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute right-2 hidden pointer-fine:inline-flex"
+            >
+              <Kbd size="sm">/</Kbd>
+            </span>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FilterSelectControl({
+  id,
+  field,
+  value,
+  onChange,
+}: {
+  id: string;
+  field: Extract<DataTableFilterField, { kind: "select" }>;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const allLabel = field.allLabel ?? `All ${field.label.toLowerCase()}`;
+
+  const options = React.useMemo(
+    () => [{ value: ALL_SELECT_VALUE, label: allLabel }, ...field.options],
+    [allLabel, field.options],
+  );
+
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <Label htmlFor={id} size="sm">
+        {field.label}
+      </Label>
+      <KiraSelect
+        id={id}
+        options={options}
+        value={value || ALL_SELECT_VALUE}
+        placeholder={field.placeholder ?? allLabel}
+        aria-label={field.label}
+        className="w-full pointer-coarse:min-h-11 **:data-[slot=select-field-clear]:hidden"
+        onChange={(next) => {
+          if (!isStringProp(next)) return;
+          onChange(next === ALL_SELECT_VALUE ? "" : next);
+        }}
+      />
+    </div>
+  );
+}
+
+function FilterChipsControl({
+  id,
+  field,
+  value,
+  onChange,
+}: {
+  id: string;
+  field: Extract<DataTableFilterField, { kind: "chips" }>;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <Label id={id} as="span" size="sm">
+        {field.label}
+      </Label>
+      <div
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Labeled toggle-chip group avoids native fieldset borders while preserving ARIA group semantics.
+        role="group"
+        aria-labelledby={id}
+        className="flex flex-wrap gap-2"
+      >
+        {field.options.map((option) => {
+          const active = value === option.value;
+
+          return (
+            <Button
+              key={option.value}
+              type="button"
+              size="sm"
+              variant={active ? "default" : "outline"}
+              aria-pressed={active}
+              onClick={() => onChange(active ? "" : option.value)}
+              className="h-8 rounded-full px-3 text-xs pointer-coarse:min-h-11"
+            >
+              {option.label}
+            </Button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FilterDateRangeControl({
+  id,
+  field,
+  fromValue,
+  toValue,
+  onFromChange,
+  onToChange,
+}: {
+  id: string;
+  field: Extract<DataTableFilterField, { kind: "date-range" }>;
+  fromValue: string;
+  toValue: string;
+  onFromChange: (value: string) => void;
+  onToChange: (value: string) => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <Label id={id} as="span" size="sm">
+        {field.label}
+      </Label>
+      <div
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Composite date-range pair grouped under a shared visible label.
+        role="group"
+        aria-labelledby={id}
+        className="grid grid-cols-2 gap-2"
+      >
+        <Input
+          type="date"
+          aria-label={`${field.label} from`}
+          value={fromValue}
+          max={toValue || undefined}
+          onChange={(event) => onFromChange(event.target.value)}
+          className="pointer-coarse:min-h-11"
+        />
+        <Input
+          type="date"
+          aria-label={`${field.label} to`}
+          value={toValue}
+          min={fromValue || undefined}
+          onChange={(event) => onToChange(event.target.value)}
+          className="pointer-coarse:min-h-11"
+        />
+      </div>
+    </div>
+  );
+}
+
+const SEARCH_WRAPPER_LAYOUT: Record<DataTableFilterLayout, string> = {
+  toolbar: "col-span-2 min-[820px]:col-span-1",
+  stacked: "col-span-full",
+  sidebar: "",
+};
+
+const FILTER_BAR_FORM_LAYOUT: Record<DataTableFilterLayout, string> = {
+  toolbar:
+    "grid grid-cols-2 items-end gap-3 min-[820px]:grid-cols-[2fr_1fr_1fr_1fr_auto]",
+  stacked: "grid grid-cols-2 items-end gap-3 min-[820px]:grid-cols-3",
+  sidebar: "flex flex-col gap-4",
+};
+
+const FILTER_BAR_ACTION_LAYOUT: Record<DataTableFilterLayout, string> = {
+  toolbar:
+    "col-span-2 grid grid-cols-2 min-[820px]:col-span-1 min-[820px]:flex",
+  stacked: "col-span-full justify-end pt-1",
+  sidebar: "grid grid-cols-2 pt-1",
+};
+
+function getFilterFieldId(field: DataTableFilterField): string {
+  return field.kind === "date-range"
+    ? `${field.fromKey}-${field.toKey}`
+    : field.key;
+}
+
+function readDraftField<TFilters extends Record<string, string>>(
+  draft: TFilters,
+  key: string,
+): string {
+  return draft[key] ?? "";
+}
+
+function FilterBarFieldItem<TFilters extends Record<string, string>>({
+  baseId,
+  field,
+  filterState,
+  layout,
+  searchRef,
+  enableSlashShortcut,
+}: {
+  baseId: string;
+  field: DataTableFilterField;
+  filterState: UseDataTableFiltersReturn<TFilters>;
+  layout: DataTableFilterLayout;
+  searchRef: React.RefObject<HTMLInputElement | null>;
+  enableSlashShortcut: boolean;
+}) {
+  const id = `${baseId}-${getFilterFieldId(field)}`;
+
+  if (field.kind === "search") {
+    // SAFETY: Caller field definitions map string keys onto TFilters.
+    const key = field.key as keyof TFilters & string;
+
+    return (
+      <div className={SEARCH_WRAPPER_LAYOUT[layout]}>
+        <FilterSearchControl
+          id={id}
+          field={field}
+          value={readDraftField(filterState.draft, key)}
+          inputRef={searchRef}
+          enableSlashShortcut={enableSlashShortcut}
+          onChange={(value) => filterState.setField(key, value)}
+          onClear={() => filterState.clearField(key)}
+        />
+      </div>
+    );
+  }
+
+  if (field.kind === "select") {
+    // SAFETY: Caller field definitions map string keys onto TFilters.
+    const key = field.key as keyof TFilters & string;
+
+    return (
+      <FilterSelectControl
+        id={id}
+        field={field}
+        value={readDraftField(filterState.draft, key)}
+        onChange={(value) => filterState.setField(key, value)}
+      />
+    );
+  }
+
+  if (field.kind === "chips") {
+    // SAFETY: Caller field definitions map string keys onto TFilters.
+    const key = field.key as keyof TFilters & string;
+
+    return (
+      <FilterChipsControl
+        id={id}
+        field={field}
+        value={readDraftField(filterState.draft, key)}
+        onChange={(value) => filterState.setField(key, value)}
+      />
+    );
+  }
+
+  // SAFETY: Caller date-range field definitions map string keys onto TFilters.
+  const fromKey = field.fromKey as keyof TFilters & string;
+
+  // SAFETY: Caller date-range field definitions map string keys onto TFilters.
+  const toKey = field.toKey as keyof TFilters & string;
+
+  return (
+    <FilterDateRangeControl
+      id={id}
+      field={field}
+      fromValue={readDraftField(filterState.draft, fromKey)}
+      toValue={readDraftField(filterState.draft, toKey)}
+      onFromChange={(value) => filterState.setField(fromKey, value)}
+      onToChange={(value) => filterState.setField(toKey, value)}
+    />
+  );
+}
+
+function FilterSubmitButton({
+  label,
+  isDirty,
+}: {
+  label: string;
+  isDirty: boolean;
+}) {
+  return (
+    <Button type="submit" className="relative pointer-coarse:min-h-11">
+      {label}
+      {isDirty && (
+        <span
+          aria-hidden="true"
+          className="ml-2 inline-block size-2 rounded-full bg-primary-foreground"
+        />
+      )}
+    </Button>
+  );
+}
+
+function FilterResetButton({
+  label,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      disabled={disabled}
+      onClick={onClick}
+      className="pointer-coarse:min-h-11"
+    >
+      {label}
+    </Button>
+  );
+}
+
+function FilterBarActions<TFilters extends Record<string, string>>({
+  layout,
+  mode,
+  filterState,
+  searchButtonLabel,
+  resetButtonLabel,
+  liveHelperText,
+}: {
+  layout: DataTableFilterLayout;
+  mode: DataTableFilterMode;
+  filterState: UseDataTableFiltersReturn<TFilters>;
+  searchButtonLabel: string;
+  resetButtonLabel: string;
+  liveHelperText: string;
+}) {
+  if (mode === "live") {
+    return (
+      <div
+        className={cn(
+          "flex items-center justify-between gap-2",
+          layout === "toolbar" && "col-span-2 min-[820px]:col-span-1",
+        )}
+      >
+        <p className="text-xs text-muted-foreground">{liveHelperText}</p>
+        {layout !== "sidebar" && (
+          <FilterResetButton
+            label={resetButtonLabel}
+            disabled={!filterState.canReset}
+            onClick={filterState.reset}
+          />
+        )}
+      </div>
+    );
+  }
+
+  const submitBtn = (
+    <FilterSubmitButton
+      label={searchButtonLabel}
+      isDirty={filterState.isDirty}
+    />
+  );
+
+  const resetBtn = (
+    <FilterResetButton
+      label={resetButtonLabel}
+      disabled={!filterState.canReset}
+      onClick={filterState.reset}
+    />
+  );
+
+  return (
+    <div
+      className={cn("flex items-end gap-2", FILTER_BAR_ACTION_LAYOUT[layout])}
+    >
+      {layout === "stacked" ? (
+        <>
+          {resetBtn}
+          {submitBtn}
+        </>
+      ) : (
+        <>
+          {submitBtn}
+          {resetBtn}
+        </>
+      )}
+    </div>
+  );
+}
+
+function DataTableMobileFilterCollapse({
+  activeCount,
+  children,
+}: {
+  activeCount: number;
+  children: React.ReactNode;
+}) {
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  return (
+    <div data-slot="data-table-filter-sidebar" className="min-w-0">
+      <div className="min-[820px]:hidden">
+        <Collapsible open={mobileOpen} onOpenChange={setMobileOpen}>
+          <CollapsibleTrigger
+            variant="outline"
+            size="sm"
+            className="justify-between pointer-coarse:min-h-11"
+          >
+            <span className="inline-flex items-center gap-2">
+              <IconFilter className="size-4" aria-hidden="true" />
+              Filters
+              {activeCount > 0 && (
+                <Badge variant="secondary" className="tabular-nums">
+                  {activeCount}
+                </Badge>
+              )}
+            </span>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-3">{children}</CollapsibleContent>
+        </Collapsible>
+      </div>
+      <div className="hidden min-[820px]:block">{children}</div>
+    </div>
+  );
+}
+
+function DataTableFilterBar<TFilters extends Record<string, string>>({
+  fields,
+  filterState,
+  layout = "toolbar",
+  mode: modeOverride,
+  enableSlashShortcut = false,
+  searchButtonLabel = "Search",
+  resetButtonLabel = "Reset",
+  liveHelperText = "Filters apply as you type",
+  className,
+}: DataTableFilterBarProps<TFilters>) {
+  const mode = modeOverride ?? filterState.mode;
+  const baseId = React.useId();
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  useSlashSearchFocus(enableSlashShortcut, searchRef);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    filterState.apply();
+  };
+
+  const formBody = (
+    <form
+      onSubmit={handleSubmit}
+      data-slot="data-table-filter-bar"
+      data-layout={layout}
+      className={cn(FILTER_BAR_FORM_LAYOUT[layout], className)}
+    >
+      {fields.map((field) => (
+        <FilterBarFieldItem
+          key={getFilterFieldId(field)}
+          baseId={baseId}
+          field={field}
+          filterState={filterState}
+          layout={layout}
+          searchRef={searchRef}
+          enableSlashShortcut={enableSlashShortcut}
+        />
+      ))}
+      <FilterBarActions
+        layout={layout}
+        mode={mode}
+        filterState={filterState}
+        searchButtonLabel={searchButtonLabel}
+        resetButtonLabel={resetButtonLabel}
+        liveHelperText={liveHelperText}
+      />
+    </form>
+  );
+
+  if (layout === "sidebar") {
+    return (
+      <DataTableMobileFilterCollapse activeCount={filterState.activeCount}>
+        {formBody}
+      </DataTableMobileFilterCollapse>
+    );
+  }
+
+  return formBody;
+}
+
+interface DataTableActiveFiltersProps<TFilters extends Record<string, string>> {
+  fields: readonly DataTableFilterField[];
+  filterState: UseDataTableFiltersReturn<TFilters>;
+  className?: string;
+}
+
+interface ActiveFilterTag {
+  key: string;
+  label: string;
+  displayValue: string;
+}
+
+function collectDateRangeTags<TFilters extends Record<string, string>>(
+  field: Extract<DataTableFilterField, { kind: "date-range" }>,
+  applied: TFilters,
+  defaults: TFilters,
+): ActiveFilterTag[] {
+  const tags: ActiveFilterTag[] = [];
+
+  const pairs: readonly [string, string][] = [
+    [field.fromKey, `${field.label} from`],
+    [field.toKey, `${field.label} to`],
+  ];
+
+  for (const [key, label] of pairs) {
+    const val = (applied[key] ?? "").trim();
+
+    if (val && val !== (defaults[key] ?? "").trim()) {
+      tags.push({ key, label, displayValue: val });
+    }
+  }
+
+  return tags;
+}
+
+function collectSingleFieldTag<TFilters extends Record<string, string>>(
+  field: Exclude<DataTableFilterField, { kind: "date-range" }>,
+  applied: TFilters,
+  defaults: TFilters,
+): ActiveFilterTag | null {
+  const raw = (applied[field.key] ?? "").trim();
+
+  if (!raw || raw === (defaults[field.key] ?? "").trim()) return null;
+
+  const displayValue =
+    field.kind === "search"
+      ? raw
+      : (field.options.find((opt) => opt.value === raw)?.label ?? raw);
+
+  return { key: field.key, label: field.label, displayValue };
+}
+
+function collectActiveFilterTags<TFilters extends Record<string, string>>(
+  fields: readonly DataTableFilterField[],
+  applied: TFilters,
+  defaults: TFilters,
+): ActiveFilterTag[] {
+  const tags: ActiveFilterTag[] = [];
+
+  for (const field of fields) {
+    if (field.kind === "date-range") {
+      tags.push(...collectDateRangeTags(field, applied, defaults));
+      continue;
+    }
+
+    const tag = collectSingleFieldTag(field, applied, defaults);
+
+    if (tag) tags.push(tag);
+  }
+
+  return tags;
+}
+
+function DataTableActiveFilters<TFilters extends Record<string, string>>({
+  fields,
+  filterState,
+  className,
+}: DataTableActiveFiltersProps<TFilters>) {
+  const tags = collectActiveFilterTags(
+    fields,
+    filterState.applied,
+    filterState.defaultValues,
+  );
+
+  if (tags.length === 0) return null;
+
+  return (
+    <div
+      data-slot="data-table-active-filters"
+      className={cn("flex flex-wrap items-center gap-2", className)}
+    >
+      {tags.map((tag) => (
+        <Badge
+          key={tag.key}
+          variant="outline"
+          className="gap-2 border-primary/40 bg-primary/5 py-1 pl-3 pr-2 text-xs font-medium text-foreground"
+        >
+          <span className="text-muted-foreground">{tag.label}:</span>
+          <span>{tag.displayValue}</span>
+          <button
+            type="button"
+            onClick={() => {
+              // SAFETY: Tag keys originate from caller field definitions on TFilters.
+              filterState.clearField(tag.key as keyof TFilters & string);
+            }}
+            aria-label={`Remove ${tag.label}: ${tag.displayValue}`}
+            className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:min-h-11 pointer-coarse:min-w-11"
+          >
+            <IconX className="size-3" aria-hidden="true" />
+          </button>
+        </Badge>
+      ))}
+      {tags.length > 1 && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={filterState.reset}
+          className="h-7 px-2 text-xs text-muted-foreground"
+        >
+          Clear all
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function DataTableCardSortBar<TData extends RowData>({
+  table,
+  columnLabels,
+}: {
+  table: DTTable<TData>;
+  columnLabels: Readonly<Record<string, string>>;
+}) {
+  "use no memo";
+
+  const selectId = React.useId();
+  const state = useTableState(table);
+
+  const sortableCols = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanSort());
+
+  if (sortableCols.length === 0) return null;
+
+  const options: DataTableFilterOption[] = [
+    { value: "none", label: "Default order" },
+  ];
+
+  for (const col of sortableCols) {
+    const label = columnLabel(col, columnLabels);
+    options.push(
+      { value: `${col.id}:asc`, label: `${label} (A–Z / Asc)` },
+      { value: `${col.id}:desc`, label: `${label} (Z–A / Desc)` },
+    );
+  }
+
+  const currentSort = state.sorting[0];
+
+  const currentValue = currentSort
+    ? `${currentSort.id}:${currentSort.desc ? "desc" : "asc"}`
+    : "none";
+
+  return (
+    <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
+      <Label htmlFor={selectId} size="sm" className="text-muted-foreground">
+        Sort by
+      </Label>
+      <KiraSelect
+        id={selectId}
+        options={options}
+        value={currentValue}
+        aria-label="Sort by"
+        className="w-52 max-w-full pointer-coarse:min-h-11 **:data-[slot=select-field-clear]:hidden"
+        onChange={(next) => {
+          if (!isStringProp(next)) return;
+
+          if (next === "none") {
+            table.setSorting([]);
+
+            return;
+          }
+
+          const [id, dir] = next.split(":");
+
+          if (id) table.setSorting([{ id, desc: dir === "desc" }]);
+        }}
+      />
+    </div>
+  );
+}
+
+function DataTableCardSkeletons({ count }: { count: number }) {
+  return (
+    <div
+      data-slot="data-table-card-skeletons"
+      aria-busy="true"
+      className="grid grid-cols-1 gap-3"
+    >
+      <span className="sr-only">Loading items</span>
+      {Array.from({ length: count }, (_, idx) => (
+        <div
+          key={`card-sk-${idx}`}
+          aria-hidden="true"
+          className="rounded-xl border border-border bg-card p-4"
+        >
+          <div className="grid grid-cols-2 gap-3 min-[820px]:flex min-[820px]:items-center min-[820px]:justify-between">
+            <div className="col-span-2 space-y-2 min-[820px]:w-1/3">
+              <div className="h-4 w-3/4 animate-skeleton-wave rounded bg-muted motion-reduce:animate-none" />
+              <div className="h-3 w-1/3 animate-skeleton-wave rounded bg-muted motion-reduce:animate-none" />
+            </div>
+            <div className="h-6 w-20 animate-skeleton-wave rounded-full bg-muted motion-reduce:animate-none" />
+            <div className="h-4 w-28 animate-skeleton-wave rounded bg-muted motion-reduce:animate-none" />
+            <div className="h-4 w-24 animate-skeleton-wave rounded bg-muted motion-reduce:animate-none" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DefaultDataTableCard<TData extends RowData>({
+  row,
+  columnLabels,
+}: {
+  row: DTRow<TData>;
+  columnLabels: Readonly<Record<string, string>>;
+}) {
+  "use no memo";
+
+  const cells = row
+    .getVisibleCells()
+    .filter((cell) => cell.column.id !== "select" && cell.column.id !== "drag");
+
+  const [primaryCell, ...restCells] = cells;
+  const actionsCell = restCells.find((cell) => cell.column.id === "actions");
+  const metaCells = restCells.filter((cell) => cell.column.id !== "actions");
+
+  return (
+    <div className="grid grid-cols-2 items-center gap-3 min-[820px]:flex min-[820px]:items-center min-[820px]:justify-between min-[820px]:gap-4">
+      {primaryCell && (
+        <div className="col-span-2 flex min-w-0 items-center justify-between gap-2 min-[820px]:flex-1">
+          <div className="min-w-0 font-medium text-foreground">
+            <FlexRender cell={primaryCell} />
+          </div>
+          {actionsCell && (
+            <div className="shrink-0 min-[820px]:hidden">
+              <FlexRender cell={actionsCell} />
+            </div>
+          )}
+        </div>
+      )}
+      {metaCells.map((cell) => (
+        <div key={cell.id} className="min-w-0 text-sm">
+          <span className="block text-xs text-muted-foreground min-[820px]:hidden">
+            {columnLabel(cell.column, columnLabels)}
+          </span>
+          <FlexRender cell={cell} />
+        </div>
+      ))}
+      {actionsCell && (
+        <div className="hidden shrink-0 min-[820px]:block">
+          <FlexRender cell={actionsCell} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DataTableCardList<TData extends RowData>({
+  renderCard,
+  emptyState,
+  showCardSort = true,
+  skeletonRows,
+  className,
+}: DataTableContentProps<TData>) {
+  "use no memo";
+
+  const ctx = useDataTable<TData>();
+
+  const {
+    table,
+    columnLabels,
+    isLoading,
+    isFetching,
+    error,
+    onRetry,
+    onRowClick,
+    pendingRowIds,
+  } = ctx;
+
+  const state = useTableState(table);
+  const reducedMotion = useReducedMotion();
+  const rows = table.getRowModel().rows;
+
+  const load = resolveStaticLoadFlags(
+    isLoading,
+    isFetching,
+    rows.length,
+    Math.min(state.pagination.pageSize, 6),
+    skeletonRows,
+  );
+
+  const showSort = showCardSort && Boolean(table.options.enableSorting);
+  const showErrorBanner = Boolean(error) && rows.length > 0;
+
+  return (
+    <div
+      data-slot="data-table-card-list"
+      aria-busy={load.isBusy || undefined}
+      className={cn("min-w-0", className)}
+    >
+      {showSort && (
+        <DataTableCardSortBar table={table} columnLabels={columnLabels} />
+      )}
+      {showErrorBanner && (
+        <DataTableInlineErrorBanner error={error} onRetry={onRetry} />
+      )}
+      {load.showInitialSkeleton ? (
+        <DataTableCardSkeletons count={load.skeletonCount} />
+      ) : (
+        <DataTableCardItems
+          rows={rows}
+          emptyState={emptyState}
+          ctx={ctx}
+          isRefetching={load.isRefetching}
+          pendingRowIds={pendingRowIds}
+          reducedMotion={reducedMotion}
+          onRowClick={onRowClick}
+          renderCard={renderCard}
+          columnLabels={columnLabels}
+        />
+      )}
+    </div>
+  );
+}
+
+function DataTableCardItem<TData extends RowData>({
+  row,
+  index,
+  isPending,
+  reducedMotion,
+  onRowClick,
+  renderCard,
+  columnLabels,
+}: {
+  row: DTRow<TData>;
+  index: number;
+  isPending: boolean;
+  reducedMotion: boolean;
+  onRowClick?: (row: DTRow<TData>) => void;
+  renderCard?: (row: DTRow<TData>) => React.ReactNode;
+  columnLabels: Readonly<Record<string, string>>;
+}) {
+  const stagger = !reducedMotion && index < 6;
+
+  const content = renderCard ? (
+    renderCard(row)
+  ) : (
+    <DefaultDataTableCard row={row} columnLabels={columnLabels} />
+  );
+
+  const handleClick = onRowClick
+    ? (event: React.MouseEvent<HTMLLIElement>) => {
+        if (!isInteractiveTarget(event.target)) onRowClick(row);
+      }
+    : undefined;
+
+  return (
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Optional row-level click convenience mirrors table rows; interactive cell controls handle keyboard actions directly.
+    <li
+      aria-busy={isPending || undefined}
+      data-pending={isPending ? "true" : undefined}
+      style={stagger ? { animationDelay: `${index * 35}ms` } : undefined}
+      onClick={handleClick}
+      className={cn(
+        "rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-card,0_0_transparent)]",
+        "motion-safe:transition-[transform,border-color,box-shadow] motion-reduce:transition-none",
+        "[@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:border-primary/40",
+        stagger && "motion-safe:animate-fade-in",
+        onRowClick && "cursor-pointer",
+        isPending && "opacity-60",
+      )}
+    >
+      {content}
+    </li>
+  );
+}
+
+function DataTableCardItems<TData extends RowData>({
+  rows,
+  emptyState,
+  ctx,
+  isRefetching,
+  pendingRowIds,
+  reducedMotion,
+  onRowClick,
+  renderCard,
+  columnLabels,
+}: {
+  rows: DTRow<TData>[];
+  emptyState: DataTableContentProps<TData>["emptyState"];
+  ctx: DataTableContextValue<TData>;
+  isRefetching: boolean;
+  pendingRowIds?: ReadonlySet<string>;
+  reducedMotion: boolean;
+  onRowClick?: (row: DTRow<TData>) => void;
+  renderCard?: (row: DTRow<TData>) => React.ReactNode;
+  columnLabels: Readonly<Record<string, string>>;
+}) {
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-border bg-card">
+        {resolveDataTableEmptyNode(emptyState, ctx)}
+      </div>
+    );
+  }
+
+  return (
+    <ul
+      className={cn(
+        "m-0 grid list-none grid-cols-1 gap-3 p-0",
+        isRefetching && "opacity-60 motion-safe:transition-opacity",
+      )}
+    >
+      {rows.map((row, index) => (
+        <DataTableCardItem
+          key={row.id}
+          row={row}
+          index={index}
+          isPending={Boolean(pendingRowIds?.has(row.id))}
+          reducedMotion={reducedMotion}
+          onRowClick={onRowClick}
+          renderCard={renderCard}
+          columnLabels={columnLabels}
+        />
+      ))}
+    </ul>
+  );
+}
+
+type DataTablePreset = "toolbar" | "sidebar" | "cards";
+
+interface KiraDataTableProps<
+  TData extends RowData,
+  TValue = unknown,
+  TFilters extends Record<string, string> = Record<string, string>,
+> extends Omit<DataTableProps<TData, TValue>, "children"> {
+  /** Layout preset: "toolbar" (default), "sidebar", or "cards". */
+  preset?: DataTablePreset;
+  /** Results layout. Defaults to cards for the cards preset and table otherwise. */
+  view?: DataTableContentProps<TData>["view"];
+  title?: React.ReactNode;
+  hint?: React.ReactNode;
+  /** Displayed inside the title as "Title (N)". Defaults to server rowCount or data.length. */
+  totalCount?: number;
+  filters?: readonly DataTableFilterField[];
+  filterState?: UseDataTableFiltersReturn<TFilters>;
+  filterMode?: DataTableFilterMode;
+  showActiveFilters?: boolean;
+  enableSlashShortcut?: boolean;
+  stickyHeader?: boolean;
+  renderCard?: (row: DTRow<TData>) => React.ReactNode;
+  emptyState?: DataTableContentProps<TData>["emptyState"];
+  tableLabel?: string;
+  headerActions?: React.ReactNode;
+  bulkActions?: React.ReactNode;
+  pagination?: DataTablePaginationProps | false;
+  className?: string;
+  contentClassName?: string;
+}
+
+function KiraDataTableResultsHeader<TFilters extends Record<string, string>>({
+  title,
+  count,
+  hint,
+  preset,
+  filterState,
+  headerActions,
+}: {
+  title?: React.ReactNode;
+  count: number;
+  hint?: React.ReactNode;
+  preset: DataTablePreset;
+  filterState?: UseDataTableFiltersReturn<TFilters>;
+  headerActions?: React.ReactNode;
+}) {
+  if (!title && !hint && !headerActions && preset !== "sidebar") return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex min-w-0 items-baseline gap-2">
+        {title && (
+          <h2 className="text-base font-semibold tracking-tight text-foreground">
+            {title}{" "}
+            <span className="font-normal tabular-nums text-muted-foreground">
+              ({count})
+            </span>
+          </h2>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
+        {preset === "sidebar" && filterState && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={!filterState.canReset}
+            onClick={filterState.reset}
+            className="pointer-coarse:min-h-11"
+          >
+            Reset
+          </Button>
+        )}
+        {headerActions}
+      </div>
+    </div>
+  );
+}
+
+interface KiraDataTableLayoutViewProps<
+  TFilters extends Record<string, string>,
+> {
+  preset: DataTablePreset;
+  title?: React.ReactNode;
+  hint?: React.ReactNode;
+  resolvedCount: number;
+  filters?: readonly DataTableFilterField[];
+  filterState?: UseDataTableFiltersReturn<TFilters>;
+  resolvedFilterMode: DataTableFilterMode;
+  resolvedShowActive: boolean;
+  resolvedSlash: boolean;
+  headerActions?: React.ReactNode;
+  bulkActions?: React.ReactNode;
+  tableContent: React.ReactNode;
+  footer: React.ReactNode;
+  className?: string;
+}
+
+function KiraDataTableActiveBar<TFilters extends Record<string, string>>({
+  show,
+  filters,
+  filterState,
+}: {
+  show: boolean;
+  filters?: readonly DataTableFilterField[];
+  filterState?: UseDataTableFiltersReturn<TFilters>;
+}) {
+  if (!show || !filters || !filterState) return null;
+
+  return <DataTableActiveFilters fields={filters} filterState={filterState} />;
+}
+
+function KiraDataTableSidebarLayout<TFilters extends Record<string, string>>(
+  props: KiraDataTableLayoutViewProps<TFilters>,
+) {
+  const { filters, filterState } = props;
+
+  return (
+    <div
+      data-slot="kira-data-table"
+      data-preset="sidebar"
+      className={cn(
+        "grid grid-cols-1 gap-4 min-[820px]:grid-cols-[16rem_minmax(0,1fr)] min-[820px]:items-start",
+        props.className,
+      )}
+    >
+      {filters && filterState && (
+        <Card size="sm" className="min-[820px]:sticky min-[820px]:top-4">
+          <CardContent>
+            <DataTableFilterBar
+              fields={filters}
+              filterState={filterState}
+              layout="sidebar"
+              mode={props.resolvedFilterMode}
+              enableSlashShortcut={props.resolvedSlash}
+            />
+          </CardContent>
+        </Card>
+      )}
+      <div className="min-w-0 space-y-3">
+        <KiraDataTableResultsHeader
+          title={props.title}
+          count={props.resolvedCount}
+          hint={props.hint}
+          preset="sidebar"
+          filterState={filterState}
+          headerActions={props.headerActions}
+        />
+        <KiraDataTableActiveBar
+          show={props.resolvedShowActive}
+          filters={filters}
+          filterState={filterState}
+        />
+        {props.bulkActions}
+        {props.tableContent}
+        {props.footer}
+      </div>
+    </div>
+  );
+}
+
+function KiraDataTableCardsLayout<TFilters extends Record<string, string>>(
+  props: KiraDataTableLayoutViewProps<TFilters>,
+) {
+  const { filters, filterState } = props;
+
+  return (
+    <div
+      data-slot="kira-data-table"
+      data-preset="cards"
+      className={cn("min-w-0 space-y-4", props.className)}
+    >
+      {filters && filterState && (
+        <Card size="sm">
+          <CardContent>
+            <DataTableFilterBar
+              fields={filters}
+              filterState={filterState}
+              layout="stacked"
+              mode={props.resolvedFilterMode}
+              enableSlashShortcut={props.resolvedSlash}
+            />
+          </CardContent>
+        </Card>
+      )}
+      <div className="space-y-3">
+        <KiraDataTableResultsHeader
+          title={props.title}
+          count={props.resolvedCount}
+          hint={props.hint}
+          preset="cards"
+          filterState={filterState}
+          headerActions={props.headerActions}
+        />
+        <KiraDataTableActiveBar
+          show={props.resolvedShowActive}
+          filters={filters}
+          filterState={filterState}
+        />
+        {props.bulkActions}
+        {props.tableContent}
+        {props.footer}
+      </div>
+    </div>
+  );
+}
+
+function KiraDataTableToolbarLayout<TFilters extends Record<string, string>>(
+  props: KiraDataTableLayoutViewProps<TFilters>,
+) {
+  const { filters, filterState } = props;
+  const hasHeader = Boolean(props.title || props.hint || props.headerActions);
+
+  return (
+    <Card
+      size="sm"
+      data-slot="kira-data-table"
+      data-preset="toolbar"
+      className={cn("min-w-0", props.className)}
+    >
+      {hasHeader && (
+        <CardHeader className="border-b border-border">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle>
+              {props.title}{" "}
+              <span className="font-normal tabular-nums text-muted-foreground">
+                ({props.resolvedCount})
+              </span>
+            </CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              {props.hint && <CardDescription>{props.hint}</CardDescription>}
+              {props.headerActions}
+            </div>
+          </div>
+        </CardHeader>
+      )}
+      <CardContent className="space-y-4">
+        {filters && filterState && (
+          <DataTableFilterBar
+            fields={filters}
+            filterState={filterState}
+            layout="toolbar"
+            mode={props.resolvedFilterMode}
+            enableSlashShortcut={props.resolvedSlash}
+          />
+        )}
+        <KiraDataTableActiveBar
+          show={props.resolvedShowActive}
+          filters={filters}
+          filterState={filterState}
+        />
+        {props.bulkActions}
+        {props.tableContent}
+        {props.footer}
+      </CardContent>
+    </Card>
+  );
+}
+
+function KiraDataTableLayoutView<TFilters extends Record<string, string>>(
+  props: KiraDataTableLayoutViewProps<TFilters>,
+) {
+  if (props.preset === "sidebar") {
+    return <KiraDataTableSidebarLayout {...props} />;
+  }
+
+  if (props.preset === "cards") {
+    return <KiraDataTableCardsLayout {...props} />;
+  }
+
+  return <KiraDataTableToolbarLayout {...props} />;
+}
+
+function resolveKiraPaginationConfig(
+  preset: DataTablePreset,
+  pagination?: DataTablePaginationProps | false,
+): DataTablePaginationProps | false {
+  if (pagination === false) return false;
+
+  return {
+    showPageInfo: true,
+    showPageSize: true,
+    infoFormat: "{start}–{end} of {total}",
+    pageSizeOptions: [6, 12, 24],
+    showFirstLast: false,
+    showJump: preset === "sidebar",
+    variant: preset === "cards" ? "pills" : "outline",
+    ...pagination,
+  };
+}
+
+function resolveKiraPresetDefaults(
+  preset: DataTablePreset,
+  overrides: {
+    view?: "table" | "cards";
+    filterMode?: DataTableFilterMode;
+    showActiveFilters?: boolean;
+    enableSlashShortcut?: boolean;
+    stickyHeader?: boolean;
+  },
+) {
+  return {
+    view: overrides.view ?? (preset === "cards" ? "cards" : "table"),
+    filterMode:
+      overrides.filterMode ?? (preset === "sidebar" ? "live" : "manual"),
+    showActive: overrides.showActiveFilters ?? preset === "cards",
+    slash: overrides.enableSlashShortcut ?? preset === "sidebar",
+    stickyHeader: overrides.stickyHeader ?? preset === "toolbar",
+  };
+}
+
+function renderKiraPaginationFooter(
+  preset: DataTablePreset,
+  pagination?: DataTablePaginationProps | false,
+): React.ReactNode {
+  const config = resolveKiraPaginationConfig(preset, pagination);
+
+  if (config === false) return null;
+
+  return (
+    <DataTablePagination
+      {...config}
+      className={cn(preset === "cards" && "justify-center", config.className)}
+    />
+  );
+}
+
+function KiraDataTable<
+  TData extends RowData,
+  TValue = unknown,
+  TFilters extends Record<string, string> = Record<string, string>,
+>({
+  preset = "toolbar",
+  view,
+  title,
+  hint,
+  totalCount,
+  filters,
+  filterState,
+  filterMode,
+  showActiveFilters,
+  enableSlashShortcut,
+  stickyHeader,
+  renderCard,
+  emptyState,
+  tableLabel,
+  headerActions,
+  bulkActions,
+  pagination,
+  className,
+  contentClassName,
+  ...rootProps
+}: KiraDataTableProps<TData, TValue, TFilters>) {
+  const resolvedCount =
+    totalCount ?? rootProps.serverPagination?.rowCount ?? rootProps.data.length;
+
+  const defaults = resolveKiraPresetDefaults(preset, {
+    view,
+    filterMode,
+    showActiveFilters,
+    enableSlashShortcut,
+    stickyHeader,
+  });
+
+  return (
+    <DataTableRoot
+      {...rootProps}
+      hasActiveFilters={
+        rootProps.hasActiveFilters ?? filterState?.hasActiveFilters
+      }
+      onResetFilters={rootProps.onResetFilters ?? filterState?.reset}
+    >
+      <KiraDataTableLayoutView
+        preset={preset}
+        title={title}
+        hint={hint}
+        resolvedCount={resolvedCount}
+        filters={filters}
+        filterState={filterState}
+        resolvedFilterMode={defaults.filterMode}
+        resolvedShowActive={defaults.showActive}
+        resolvedSlash={defaults.slash}
+        headerActions={headerActions}
+        bulkActions={bulkActions}
+        tableContent={
+          <DataTableContent
+            view={defaults.view}
+            stickyHeader={defaults.stickyHeader}
+            renderCard={renderCard}
+            emptyState={emptyState}
+            label={tableLabel}
+            className={contentClassName}
+          />
+        }
+        footer={renderKiraPaginationFooter(preset, pagination)}
+        className={className}
+      />
+    </DataTableRoot>
   );
 }

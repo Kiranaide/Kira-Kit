@@ -41,7 +41,7 @@ export const moduleMeta: Record<ModuleSegment, ModuleSegmentMeta> = {
     label: "Theme Provider",
     shortLabel: "Theme",
     tagline:
-      "Standalone light/dark theme context with localStorage persistence, OS preference fallback, and a ready-to-use ThemeToggle button.",
+      "SSR-safe light, dark, and system theme context with live OS tracking, controlled cookie support, pre-paint bootstrap script, and ThemeToggle.",
     command: "{runner} kira-kit add theme-provider",
     depsLabel: "1 UI dep · button",
     scope: "App root",
@@ -94,9 +94,9 @@ export const themeProviderRootCode = `import { ThemeProvider } from "@/component
 export function Root({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider
-      // Optional: omit to follow prefers-color-scheme on first visit
-      defaultTheme="dark"
-      // Optional: defaults to "kira-theme"
+      // Defaults to "system" (tracks prefers-color-scheme live)
+      defaultTheme="system"
+      // Set storageKey={null} with value={cookieTheme} + onThemeChange for SSR cookies
       storageKey="kira-theme"
     >
       {children}
@@ -107,31 +107,31 @@ export function Root({ children }: { children: React.ReactNode }) {
 export const themeProviderUsageCode = `import { ThemeToggle, useTheme } from "@/components/ui/theme-provider";
 
 export function HeaderActions() {
-  const { theme, setTheme } = useTheme();
+  const { theme, preference, setTheme } = useTheme();
 
   return (
     <div className="flex items-center gap-2">
       {/* Compact icon-only toggle or full-width sidebar button (showLabel={true}) */}
       <ThemeToggle showLabel={false} />
-      <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-        Active: {theme}
+      <button type="button" onClick={() => setTheme("system")}>
+        {preference} ({theme})
       </button>
     </div>
   );
 }`;
 
-export const themeFoucScriptCode = `<!-- Optional: place in index.html <head> to prevent light/dark flash before React hydrates -->
-<script>
-  (function () {
-    try {
-      var key = "kira-theme";
-      var stored = localStorage.getItem(key);
-      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      var theme = stored === "light" || stored === "dark" ? stored : (prefersDark ? "dark" : "light");
-      document.documentElement.classList.add(theme);
-    } catch (e) {}
-  })();
-</script>`;
+export const themeFoucScriptCode = `import { getThemeBootstrapScript } from "@/components/ui/theme-provider";
+
+// Render inside <head> in SSR frameworks (TanStack Start, Next.js, Remix):
+<script
+  dangerouslySetInnerHTML={{
+    __html: getThemeBootstrapScript({
+      // Pass initialTheme={cookieTheme} and storageKey={null} for cookie-backed SSR
+      defaultTheme: "system",
+      storageKey: "kira-theme",
+    }),
+  }}
+/>`;
 
 export const themeChecklist = [
   {

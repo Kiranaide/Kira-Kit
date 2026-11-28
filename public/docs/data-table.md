@@ -24,14 +24,22 @@ kira-kit add @kira-kit/data-table
 - @kira-kit/avatar
 - @kira-kit/badge
 - @kira-kit/button
+- @kira-kit/card
 - @kira-kit/checkbox
+- @kira-kit/collapsible
 - @kira-kit/component-utils
 - @kira-kit/dropdown-menu
+- @kira-kit/empty
 - @kira-kit/input
+- @kira-kit/kbd
+- @kira-kit/label
 - @kira-kit/pagination
 - @kira-kit/popover
+- @kira-kit/select
+- @kira-kit/spinner
 - @kira-kit/table
 - @kira-kit/tooltip
+- @kira-kit/use-reduced-motion
 
 ## Usage
 
